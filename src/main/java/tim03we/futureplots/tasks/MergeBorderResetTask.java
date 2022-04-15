@@ -16,37 +16,33 @@ package tim03we.futureplots.tasks;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
-import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
-import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.Vector3;
-import cn.nukkit.scheduler.Task;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.BlockFace;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.utils.Plot;
-import tim03we.futureplots.utils.PlotSettings;
 
-public class MergeBorderResetTask extends Task {
+public class MergeBorderResetTask implements Runnable {
 
     private FuturePlots plugin;
     private Plot start;
-    private Level level;
+    private World level;
     private int height;
-    private Block plotWallBlock;
-    private Position plotBeginPos;
+    private Material plotWallBlock;
+    private Location plotBeginPos;
     private int xMax;
     private int zMax;
     private BlockFace direction;
-    private Block roadBlock;
-    private Block groundBlock;
-    private Block bottomBlock;
+    private Material roadBlock;
+    private Material groundBlock;
+    private Material bottomBlock;
     private Plot end;
     private boolean reset;
-    private Vector3 pos;
+    private Location pos;
 
     public MergeBorderResetTask(FuturePlots plugin, Plot start, Plot end, boolean reset) {
-        this.plugin = plugin;
+        /*this.plugin = plugin;
         this.start = start;
         this.end = end;
         this.reset = reset;
@@ -84,12 +80,12 @@ public class MergeBorderResetTask extends Task {
             this.zMax = this.plotBeginPos.getFloorZ() + plotSize;
             this.direction = BlockFace.WEST;
         }
-        this.pos = new Vector3(this.plotBeginPos.x, 0, this.plotBeginPos.z);
+        this.pos = new Vector3(this.plotBeginPos.x, 0, this.plotBeginPos.z);*/
     }
 
     @Override
-    public void onRun(int i) {
-        if(this.direction == BlockFace.NORTH || this.direction == BlockFace.SOUTH) {
+    public void run() {
+        /*if(this.direction == BlockFace.NORTH || this.direction == BlockFace.SOUTH) {
             while(this.pos.z < this.zMax) {
                 while(this.pos.y < 255) {
                     Block block;
@@ -138,6 +134,6 @@ public class MergeBorderResetTask extends Task {
         }
         PlotSettings plotSettings = new PlotSettings(this.start.getLevelName());
         if(reset) this.start.changeBorder(plotSettings.getWallBlockUnClaimed());
-        else this.start.changeBorder(plotSettings.getWallBlockClaimed());
+        else this.start.changeBorder(plotSettings.getWallBlockClaimed());*/
     }
 }

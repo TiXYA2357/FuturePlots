@@ -16,12 +16,14 @@ package tim03we.futureplots.listener;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Player;
-import cn.nukkit.block.BlockDragonEgg;
-import cn.nukkit.event.EventHandler;
-import cn.nukkit.event.Listener;
-import cn.nukkit.event.player.PlayerInteractEvent;
-import cn.nukkit.item.ItemEdible;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.utils.Plot;
 import tim03we.futureplots.utils.PlotPlayer;
@@ -32,19 +34,19 @@ public class PlayerInteract implements Listener {
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        if(Settings.levels.contains(player.getLevel().getName())) {
+        if(Settings.levels.contains(player.getWorld().getName())) {
             if(!player.isOp()) {
-                Plot plot = FuturePlots.getInstance().getPlotByPosition(event.getBlock().getLocation());
-                if(event.getItem() instanceof ItemEdible && event.getAction() == PlayerInteractEvent.Action.RIGHT_CLICK_AIR) {
+                Plot plot = FuturePlots.getInstance().getPlotByPosition(event.getClickedBlock().getLocation());
+                if(event.getMaterial().isEdible() && event.getAction() == Action.RIGHT_CLICK_AIR) {
                     return;
                 }
                 if(plot != null) {
                     if(!plot.canInteract(player)) {
-                        if(event.getAction() == PlayerInteractEvent.Action.PHYSICAL) {
+                        if(event.getAction() == Action.PHYSICAL) {
                             event.setCancelled(true);
                             return;
                         }
-                        if(event.getItem().canBeActivated() || event.getBlock().canBeActivated()) {
+                        /*if(event.getItem().canBeActivated() || event.getClickedBlock().canBeActivated()) {
                             event.setCancelled(true);
                         } else {
                             plot = new PlotPlayer(player).getPlot();
@@ -61,16 +63,30 @@ public class PlayerInteract implements Listener {
                                     }
                                 }
                             }
+                        }*/
+                        plot = new PlotPlayer(player).getPlot();
+                        if(plot == null || !plot.canInteract(player)) {
+                            Plot merge = FuturePlots.getInstance().isInMergeCheck(event.getClickedBlock().getLocation());
+                            if(merge == null) {
+                                event.setCancelled(true);
+                            } else {
+                                if(FuturePlots.provider.getOriginPlot(merge) != null && FuturePlots.provider.getMerges(merge).isEmpty()) {
+                                    merge = FuturePlots.provider.getOriginPlot(merge);
+                                }
+                                if(!merge.canInteract(player)) {
+                                    event.setCancelled(true);
+                                }
+                            }
                         }
                     } else {
-                        if(event.getAction() == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
-                            if(event.getBlock() instanceof BlockDragonEgg) {
+                        if(event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                            if(event.getMaterial() == Material.DRAGON_EGG) {
                                 event.setCancelled(true);
                             }
                         }
                     }
                 } else {
-                    Plot merge = FuturePlots.getInstance().isInMergeCheck(event.getBlock().getLocation());
+                    Plot merge = FuturePlots.getInstance().isInMergeCheck(event.getClickedBlock().getLocation());
                     if(merge == null) {
                         event.setCancelled(true);
                     } else {

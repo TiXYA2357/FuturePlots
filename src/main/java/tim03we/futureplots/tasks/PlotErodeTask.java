@@ -16,41 +16,36 @@ package tim03we.futureplots.tasks;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Server;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
-import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
-import cn.nukkit.math.Vector3;
-import cn.nukkit.scheduler.Task;
+import org.bukkit.Location;
+import org.bukkit.World;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.utils.Plot;
 import tim03we.futureplots.utils.PlotSettings;
 
 import java.util.concurrent.CompletableFuture;
 
-public class PlotErodeTask extends Task {
+public class PlotErodeTask implements Runnable {
 
-    private Level level;
+    private World level;
     private int plotSize;
-    private Position plotBeginPos;
+    private Location plotBeginPos;
     private int xMax;
     private int zMax;
-    private Vector3 pos;
+    private Location pos;
 
     public PlotErodeTask(Plot plot) {
-        PlotSettings plotSettings = new PlotSettings(plot.getLevelName());
+        /*PlotSettings plotSettings = new PlotSettings(plot.getLevelName());
         this.plotBeginPos = FuturePlots.getInstance().getPlotPosition(plot);
         this.level = plotBeginPos.getLevel();
         this.plotSize = plotSettings.getPlotSize();
         this.xMax = (int) (plotBeginPos.x + plotSize);
         this.zMax = (int) (plotBeginPos.z + plotSize);
-        this.pos = new Position(plotBeginPos.x, 0, plotBeginPos.z, Server.getInstance().getLevelByName(plot.getLevelName()));
+        this.pos = new Position(plotBeginPos.x, 0, plotBeginPos.z, Server.getInstance().getLevelByName(plot.getLevelName()));*/
     }
 
     @Override
-    public void onRun(int i) {
-        CompletableFuture.runAsync(() -> {
+    public void run() {
+        /*CompletableFuture.runAsync(() -> {
             try {
                 while (pos.x < xMax) {
                     while (pos.z < zMax) {
@@ -69,6 +64,6 @@ public class PlotErodeTask extends Task {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-        });
+        });*/
     }
 }

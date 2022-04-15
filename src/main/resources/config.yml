@@ -6,7 +6,7 @@ version: "1.2.3"
 # eng (English), deu (German), kor (Korean), chs (Chinese)
 lang: "eng"
 
-# Available providers: yaml, mysql, sqlite
+# Available providers: yaml, mysql, sqlite, mongodb
 # Default: yaml
 provider: "yaml"
 
@@ -20,6 +20,11 @@ auto-save:
 # NOT COMPLETED!
 # Should the UUID be used to keep the plot when changing the player name
 uuid: false
+
+# MongoDB connection data
+mongodb:
+  uri: "URI_CONNECTION_STRING"
+  database: "futureplots"
 
 # MySQL connection data
 mysql:
@@ -49,13 +54,13 @@ economy: false
 # how the plot world should look like later, when the world is generated for the first time
 default-settings:
   plotSize: 32
-  roadBlock: "5:0"
+  roadBlock: "BEDROCK"
   wall:
-    unclaimed: "44:0"
-    claimed: "44:1"
-  bottomBlock: "7:0"
-  plotFloorBlock: "2:0"
-  plotFillBlock: "3:0"
+    unclaimed: "STONE"
+    claimed: "STONE"
+  bottomBlock: "STONE"
+  plotFloorBlock: "STONE"
+  plotFillBlock: "STONE"
   roadWidth: 7
   groundHeight: 64
   price:

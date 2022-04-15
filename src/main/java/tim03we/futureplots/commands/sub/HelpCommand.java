@@ -16,7 +16,7 @@ package tim03we.futureplots.commands.sub;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.command.CommandSender;
+import org.bukkit.command.CommandSender;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.commands.BaseCommand;
 import tim03we.futureplots.handler.CommandHandler;

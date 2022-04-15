@@ -16,10 +16,9 @@ package tim03we.futureplots.provider.data;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Server;
-import cn.nukkit.level.Location;
-import cn.nukkit.utils.Config;
 import com.google.gson.Gson;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.provider.DataProvider;
 import tim03we.futureplots.provider.sql.SQLConnection;
@@ -40,7 +39,7 @@ public class MySQLProvider implements DataProvider {
 
     @Override
     public void connect() {
-        if(Server.getInstance().getPluginManager().getPlugin("DbLib") == null) {
+        /*if(Server.getInstance().getPluginManager().getPlugin("DbLib") == null) {
             Server.getInstance().getLogger().error("[FuturePlots] The plugin DbLib could not be found.");
             Server.getInstance().getPluginManager().disablePlugin(Server.getInstance().getPluginManager().getPlugin("FuturePlots"));
             return;
@@ -60,7 +59,7 @@ public class MySQLProvider implements DataProvider {
         } catch (ClassNotFoundException ex) {
             Server.getInstance().getLogger().error("[FuturePlots] No connection to the database could be established.");
             ex.printStackTrace();
-        }
+        }*/
     }
 
     private void checkAndRun() {
@@ -276,7 +275,7 @@ public class MySQLProvider implements DataProvider {
             String locationString = find.getString("home");
             if(locationString != null) {
                 String[] ex = find.getString("home").split(":");
-                return new Location(Double.parseDouble(ex[0]), Double.parseDouble(ex[1]), Double.parseDouble(ex[2]), Double.parseDouble(ex[3]), Double.parseDouble(ex[4]), Server.getInstance().getLevelByName(plot.getLevelName()));
+                //return new Location(Bukkit.getWorld(plot.getLevelName()), Double.parseDouble(ex[0]), Double.parseDouble(ex[1]), Double.parseDouble(ex[2]), Double.parseDouble(ex[3]), Double.parseDouble(ex[4]));
             }
         }
         return null;

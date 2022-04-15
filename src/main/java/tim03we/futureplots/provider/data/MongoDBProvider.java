@@ -16,38 +16,25 @@ package tim03we.futureplots.provider.data;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
+import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.provider.DataProvider;
+import tim03we.futureplots.provider.mongodb.MongoAPI;
 import tim03we.futureplots.utils.Plot;
-import tim03we.futureplots.utils.Settings;
-import tim03we.futureplots.utils.config.YamlConfig;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class YamlProvider implements DataProvider {
-
-    private final YamlConfig yaml = new YamlConfig(FuturePlots.getInstance().getDataFolder() + "/plots.yml");
+public class MongoDBProvider implements DataProvider {
 
     @Override
     public void connect() {
-        if(Settings.use_auto_save) {
-            runAutoSaveTask();
-        }
-        checkData();
-    }
-
-    private void runAutoSaveTask() {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(FuturePlots.getInstance(), () -> {
-            yaml.save();
-            runAutoSaveTask();
-        }, (Settings.auto_save_interval * 20L));
+        MongoAPI.load();
     }
 
     private void checkData() {
-        for (String key : yaml.getAll().keySet()) {
+        /*for (String key : yaml.getAll().keySet()) {
             if(!yaml.exists(key + ".owner")) yaml.set(key + ".owner", "");
             if(!yaml.exists(key + ".helpers")) yaml.set(key + ".helpers", new ArrayList<String>());
             if(!yaml.exists(key + ".members")) yaml.set(key + ".members", new ArrayList<String>());
@@ -57,49 +44,54 @@ public class YamlProvider implements DataProvider {
             if(!yaml.exists(key + ".merge")) yaml.set(key + ".merge", "");
             if(!yaml.exists(key + ".merges")) yaml.set(key + ".merges", new ArrayList<String>());
             if(!yaml.exists(key + ".merge_check")) yaml.set(key + ".merge_check", new ArrayList<String>());
-        }
+        }*/
     }
 
     @Override
     public void save() {
-        yaml.save();
     }
 
     @Override
     public void claimPlot(String username, Plot plot) {
-        yaml.set(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".owner", username);
-        yaml.set(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".helpers", new ArrayList<String>());
-        yaml.set(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".members", new ArrayList<String>());
-        yaml.set(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".denied", new ArrayList<String>());
-        yaml.set(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".flags", new ArrayList<String>());
-        yaml.set(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".home", "");
-        yaml.set(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".merge", "");
-        yaml.set(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".merges", new ArrayList<String>());
-        yaml.set(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".merge_check", new ArrayList<String>());
+        Document insert = new Document("owner", username)
+                        .append("helpers", new ArrayList<>())
+                        .append("members", new ArrayList<>())
+                        .append("denied", new ArrayList<>())
+                        .append("flags", new ArrayList<>())
+                        .append("home", null)
+                        .append("merge", null)
+                        .append("merges", new ArrayList<>())
+                        .append("merge_check", new ArrayList<>());
+        insert.put("_id", plot.getLevelName() + ";" + plot.getFullID());
+        MongoAPI.insert(insert);
     }
 
     @Override
     public void deletePlot(Plot plot) {
-        System.out.println(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ());
-        yaml.remove(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ());
-        yaml.save();
+        MongoAPI.delete(new Document("_id", plot.getLevelName() + ";" + plot.getFullID()));
     }
 
     @Override
     public List<String> getHelpers(Plot plot) {
-        if(hasOwner(plot)) return yaml.getStringList(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".helpers");
+        if(hasOwner(plot)) {
+            return MongoAPI.find(new Document("_id", plot.getLevelName() + ";" + plot.getFullID())).getList("helpers", String.class);
+        }
         return new ArrayList<>();
     }
 
     @Override
     public List<String> getMembers(Plot plot) {
-        if(hasOwner(plot)) return yaml.getStringList(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".members");
+        if(hasOwner(plot)) {
+            return MongoAPI.find(new Document("_id", plot.getLevelName() + ";" + plot.getFullID())).getList("members", String.class);
+        }
         return new ArrayList<>();
     }
 
     @Override
     public List<String> getDenied(Plot plot) {
-        if(hasOwner(plot)) return yaml.getStringList(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".denied");
+        if(hasOwner(plot)) {
+            return MongoAPI.find(new Document("_id", plot.getLevelName() + ";" + plot.getFullID())).getList("denied", String.class);
+        }
         return new ArrayList<>();
     }
 
@@ -125,79 +117,75 @@ public class YamlProvider implements DataProvider {
 
     @Override
     public void setOwner(String name, Plot plot) {
-        yaml.set(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".owner", name);
+        MongoAPI.change(new Document("_id", plot.getLevelName() + ";" + plot.getFullID()), "owner", name);
     }
 
     @Override
     public String getOwner(Plot plot) {
-        if(yaml.exists(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ())) {
-            return yaml.getString(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".owner");
-        }
-        return "none";
+        Document find = MongoAPI.find(new Document("_id", plot.getLevelName() + ";" + plot.getFullID()));
+        if(find == null) return "none";
+        return find.getString("owner");
     }
 
     @Override
     public void addHelper(String name, Plot plot) {
         List<String> helpers = getHelpers(plot);
         helpers.add(name.toLowerCase());
-        yaml.set(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".helpers", helpers);
+        MongoAPI.change(new Document("_id", plot.getLevelName() + ";" + plot.getFullID()), "helpers", helpers);
     }
 
     @Override
     public void addMember(String name, Plot plot) {
         List<String> members = getMembers(plot);
         members.add(name.toLowerCase());
-        yaml.set(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".members", members);
+        MongoAPI.change(new Document("_id", plot.getLevelName() + ";" + plot.getFullID()), "members", members);
     }
 
     @Override
     public void addDenied(String name, Plot plot) {
         List<String> denied = getDenied(plot);
         denied.add(name.toLowerCase());
-        yaml.set(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".denied", denied);
+        MongoAPI.change(new Document("_id", plot.getLevelName() + ";" + plot.getFullID()), "denied", denied);
     }
 
     @Override
     public void removeMember(String name, Plot plot) {
         List<String> members = getMembers(plot);
         members.remove(name.toLowerCase());
-        yaml.set(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".members", members);
+        MongoAPI.change(new Document("_id", plot.getLevelName() + ";" + plot.getFullID()), "members", members);
     }
 
     @Override
     public void removeHelper(String name, Plot plot) {
         List<String> helpers = getHelpers(plot);
         helpers.remove(name.toLowerCase());
-        yaml.set(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".helpers", helpers);
+        MongoAPI.change(new Document("_id", plot.getLevelName() + ";" + plot.getFullID()), "helpers", helpers);
     }
 
     @Override
     public void removeDenied(String name, Plot plot) {
         List<String> denied = getDenied(plot);
         denied.remove(name.toLowerCase());
-        yaml.set(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".denied", denied);
+        MongoAPI.change(new Document("_id", plot.getLevelName() + ";" + plot.getFullID()), "denied", denied);
     }
 
     @Override
     public void setHome(Plot plot, Location location) {
-        yaml.set(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".home", location.getX() + ":" + location.getY() + ":" + location.getZ() + ":" + location.getYaw() + ":" + location.getPitch());
+        MongoAPI.change(new Document("_id", plot.getLevelName() + ";" + plot.getFullID()), "home", location.getX() + ":" + location.getY() + ":" + location.getZ() + ":" + location.getYaw() + ":" + location.getPitch());
     }
 
     @Override
     public void deleteHome(Plot plot) {
-        yaml.set(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".home", "");
+        MongoAPI.change(new Document("_id", plot.getLevelName() + ";" + plot.getFullID()), "home", "");
     }
 
     @Override
     public Location getHome(Plot plot) {
-        if(yaml.exists(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".home")) {
-            String locationString = yaml.getString(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".home");
-            if(!locationString.equals("")) {
-                String[] ex = yaml.getString(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".home").split(":");
-                return new Location(Bukkit.getWorld(plot.getLevelName()), Double.parseDouble(ex[0]), Double.parseDouble(ex[1]), Double.parseDouble(ex[2]), Float.parseFloat(ex[3]), Float.parseFloat(ex[4]));
-            }
-        }
-        return null;
+        Document find = MongoAPI.find(new Document("_id", plot.getLevelName() + ";" + plot.getFullID()));
+        if(find == null) return null;
+        if(find.getString("home").isEmpty()) return null;
+        String[] ex = find.getString("home").split(":");
+        return new Location(Bukkit.getWorld(plot.getLevelName()), Double.parseDouble(ex[0]), Double.parseDouble(ex[1]), Double.parseDouble(ex[2]), Float.parseFloat(ex[3]), Float.parseFloat(ex[4]));
     }
 
     @Override
@@ -208,13 +196,13 @@ public class YamlProvider implements DataProvider {
         }
         ArrayList<String> plots = new ArrayList<>();
         if(level != null) {
-            for (String plot : yaml.getAll().keySet()) {
-                String[] ex = plot.split(";");
-                if(ex[0].equals(level) && yaml.getString(plot + ".owner").equals(name)) plots.add(plot);
+            for (Document find : MongoAPI.find()) {
+                String[] ex = find.getString("_id").split(";");
+                if(ex[0].equals(level) && find.getString("owner").equals(name)) plots.add(find.getString("_id"));
             }
         } else {
-            for (String plot : yaml.getAll().keySet()) {
-                if(yaml.getString(plot + ".owner").equals(name)) plots.add(plot);
+            for (Document find : MongoAPI.find()) {
+                if(find.getString("owner").equals(name)) plots.add(find.getString("_id"));
             }
         }
         if((i - 1) >= plots.size()) return null;
@@ -229,13 +217,13 @@ public class YamlProvider implements DataProvider {
     public List<String> getPlots(String name, Object level) {
         List<String> plots = new ArrayList<>();
         if(level != null) {
-            for (String plot : yaml.getAll().keySet()) {
-                String[] ex = plot.split(";");
-                if(ex[0].equals(level) && yaml.getString(plot + ".owner").equals(name)) plots.add(plot);
+            for (Document find : MongoAPI.find()) {
+                String[] ex = find.getString("_id").split(";");
+                if(ex[0].equals(level) && find.getString("owner").equals(name)) plots.add(find.getString("_id"));
             }
         } else {
-            for (String plot : yaml.getAll().keySet()) {
-                if(yaml.getString(plot + ".owner").equals(name)) plots.add(plot);
+            for (Document find : MongoAPI.find()) {
+                if(find.getString("owner").equals(name)) plots.add(find.getString("_id"));
             }
         }
         return plots;
@@ -244,8 +232,8 @@ public class YamlProvider implements DataProvider {
     @Override
     public Plot getNextFreePlot(String level) {
         List<Plot> plots = new ArrayList<>();
-        for (String list : yaml.getAll().keySet()) {
-            String[] ex = list.split(";");
+        for (Document find : MongoAPI.find()) {
+            String[] ex = find.getString("_id").split(";");
             if(ex[0].equals(level)) {
                 plots.add(new Plot(Integer.parseInt(ex[1]), Integer.parseInt(ex[2]), ex[0]));
             }
@@ -282,14 +270,14 @@ public class YamlProvider implements DataProvider {
             mergeList.add(plots.getX() + ";" + plots.getZ());
         }
         mergeList.add(mergePlot.getX() + ";" + mergePlot.getZ());
-        yaml.set(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".merge_check", mergeList);
+        MongoAPI.change(new Document("_id", plot.getLevelName() + ";" + plot.getFullID()), "merge_check", mergeList);
     }
 
     @Override
     public List<Plot> getMergeCheck(Plot plot) {
         List<Plot> plots = new ArrayList<>();
         if(!hasOwner(plot)) return plots;
-        for (String plotId : yaml.getStringList(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".merge_check")) {
+        for (String plotId : MongoAPI.find(new Document("_id", plot.getLevelName() + ";" + plot.getFullID())).getList("merge_check", String.class)) {
             String[] ex = plotId.split(";");
             plots.add(new Plot(Integer.parseInt(ex[0]), Integer.parseInt(ex[1]), plot.getLevelName()));
         }
@@ -299,7 +287,7 @@ public class YamlProvider implements DataProvider {
     @Override
     public Plot getOriginPlot(Plot plot) {
         if(!hasOwner(plot)) return null;
-        String originString = yaml.getString(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".merge");
+        String originString = MongoAPI.find(new Document("_id", plot.getLevelName() + ";" + plot.getFullID())).getString("merge");
         if(originString.isEmpty()) return null;
         String[] ex = originString.split(";");
         return new Plot(Integer.parseInt(ex[0]), Integer.parseInt(ex[1]), plot.getLevelName());
@@ -307,7 +295,7 @@ public class YamlProvider implements DataProvider {
 
     @Override
     public void setOriginPlot(Plot mergePlot, Plot originPlot) {
-        yaml.set(mergePlot.getLevelName() + ";" + mergePlot.getX() + ";" + mergePlot.getZ() + ".merge", originPlot.getFullID());
+        MongoAPI.change(new Document("_id", mergePlot.getLevelName() + ";" + mergePlot.getFullID()), "merge", originPlot.getFullID());
     }
 
 
@@ -318,14 +306,14 @@ public class YamlProvider implements DataProvider {
             mergeList.add(plots.getX() + ";" + plots.getZ());
         }
         mergeList.add(mergePlot.getX() + ";" + mergePlot.getZ());
-        yaml.set(originPlot.getLevelName() + ";" + originPlot.getX() + ";" + originPlot.getZ() + ".merges", mergeList);
+        MongoAPI.change(new Document("_id", originPlot.getLevelName() + ";" + originPlot.getFullID()), "merges", mergeList);
     }
 
     @Override
     public List<Plot> getMerges(Plot plot) {
         List<Plot> plots = new ArrayList<>();
         if(!hasOwner(plot)) return plots;
-        for (String plotId : yaml.getStringList(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".merges")) {
+        for (String plotId : MongoAPI.find(new Document("_id", plot.getLevelName() + ";" + plot.getFullID())).getList("merges", String.class)) {
             String[] ex = plotId.split(";");
             plots.add(new Plot(Integer.parseInt(ex[0]), Integer.parseInt(ex[1]), plot.getLevelName()));
         }
@@ -334,14 +322,14 @@ public class YamlProvider implements DataProvider {
 
     @Override
     public void resetMerges(Plot plot) {
-        yaml.set(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".home", "");
-        yaml.set(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".merge", "");
-        yaml.set(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".merges", new ArrayList<>());
-        yaml.set(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".merge_check", new ArrayList<>());
+        MongoAPI.change(new Document("_id", plot.getLevelName() + ";" + plot.getFullID()), "home", "");
+        MongoAPI.change(new Document("_id", plot.getLevelName() + ";" + plot.getFullID()), "merge", "");
+        MongoAPI.change(new Document("_id", plot.getLevelName() + ";" + plot.getFullID()), "merges", new ArrayList<>());
+        MongoAPI.change(new Document("_id", plot.getLevelName() + ";" + plot.getFullID()), "merge_check", new ArrayList<>());
     }
 
     @Override
     public void deleteMergeList(Plot plot) {
-        yaml.set(plot.getLevelName() + ";" + plot.getX() + ";" + plot.getZ() + ".merges", new ArrayList<>());
+        MongoAPI.change(new Document("_id", plot.getLevelName() + ";" + plot.getFullID()), "merges", new ArrayList<>());
     }
 }

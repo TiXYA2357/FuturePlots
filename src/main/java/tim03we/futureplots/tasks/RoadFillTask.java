@@ -16,37 +16,34 @@ package tim03we.futureplots.tasks;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
-import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
-import cn.nukkit.math.Vector3;
-import cn.nukkit.scheduler.Task;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.utils.Plot;
 import tim03we.futureplots.utils.PlotSettings;
 
-public class RoadFillTask extends Task {
+public class RoadFillTask implements Runnable {
 
     private FuturePlots plugin;
     private Plot start;
     private Plot end;
-    private Level level;
+    private World level;
     private int height;
-    private Position plotBeginPos;
+    private Location plotBeginPos;
     private int xMax;
     private int zMax;
-    private Block roadBlock, groundBlock, bottomBlock;
+    private Material roadBlock, groundBlock, bottomBlock;
     private int maxBlocksPerTick;
-    private Vector3 pos;
+    private Location pos;
 
     public RoadFillTask(FuturePlots plugin, Plot start, Plot end) {
-        this.plugin = plugin;
+        /*this.plugin = plugin;
         this.start = start;
         this.end = end;
 
         this.plotBeginPos = plugin.getPlotPosition(start);
-        this.level = plotBeginPos.getLevel();
+        this.level = plotBeginPos.getWorld();
 
         PlotSettings plotSettings = new PlotSettings(start.getLevelName());
         int plotSize = plotSettings.getPlotSize();
@@ -75,12 +72,12 @@ public class RoadFillTask extends Task {
         }
 
         this.maxBlocksPerTick = 256;
-        this.pos = new Vector3(this.plotBeginPos.x, 0, this.plotBeginPos.z);
+        this.pos = new Vector3(this.plotBeginPos.x, 0, this.plotBeginPos.z);*/
     }
 
     @Override
-    public void onRun(int i) {
-        int blocks = 0;
+    public void run() {
+        /*int blocks = 0;
         while (this.pos.x < this.xMax) {
             while (this.pos.z < this.zMax) {
                 while (this.pos.y < 255) {
@@ -99,10 +96,7 @@ public class RoadFillTask extends Task {
                     this.pos.y++;
 
                     blocks++;
-                    /*if(blocks >= maxBlocksPerTick) {
-                        this.setHandler(null);
-                        this.plugin.getServer().getScheduler().scheduleDelayedTask(this, 1);
-                    }*/
+
                 }
                 this.pos.y = 0;
                 this.pos.z++;
@@ -110,6 +104,6 @@ public class RoadFillTask extends Task {
             this.pos.z = this.plotBeginPos.z;
             this.pos.x++;
         }
-        this.plugin.getServer().getScheduler().scheduleTask(new BorderCorrectionTask(this.plugin, this.start, this.end));
+        this.plugin.getServer().getScheduler().scheduleTask(new BorderCorrectionTask(this.plugin, this.start, this.end));*/
     }
 }

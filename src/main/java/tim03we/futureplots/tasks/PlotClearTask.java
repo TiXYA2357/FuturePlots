@@ -16,70 +16,78 @@ package tim03we.futureplots.tasks;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Server;
-import cn.nukkit.block.Block;
-import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
-import cn.nukkit.math.Vector3;
-import cn.nukkit.scheduler.Task;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.utils.Plot;
 import tim03we.futureplots.utils.PlotSettings;
 
 import java.util.concurrent.CompletableFuture;
 
-public class PlotClearTask extends Task {
+public class PlotClearTask implements Runnable {
 
-    private Level level;
+    private World level;
     private int height;
     private int plotSize;
-    private Block bottomBlock;
-    private Block plotFillBlock;
-    private Block plotFloorBlock;
-    private Position plotBeginPos;
+    private Material bottomBlock;
+    private Material plotFillBlock;
+    private Material plotFloorBlock;
+    private Location plotBeginPos;
     private int xMax;
     private int zMax;
-    private Vector3 pos;
+    private Location pos;
 
     public PlotClearTask(Plot plot) {
         PlotSettings plotSettings = new PlotSettings(plot.getLevelName());
         this.plotBeginPos = FuturePlots.getInstance().getPlotPosition(plot);
-        this.level = plotBeginPos.getLevel();
+        this.level = plotBeginPos.getWorld();
         this.plotSize = plotSettings.getPlotSize();
-        this.xMax = (int) (plotBeginPos.x + plotSize);
-        this.zMax = (int) (plotBeginPos.z + plotSize);
+        this.xMax = (int) (plotBeginPos.getX() + plotSize);
+        this.zMax = (int) (plotBeginPos.getZ() + plotSize);
         this.height = plotSettings.getGroundHeight();
         this.bottomBlock = plotSettings.getBottomBlock();
         this.plotFillBlock = plotSettings.getPlotFillBlock();
         this.plotFloorBlock = plotSettings.getPlotFloorBlock();
-        this.pos = new Position(plotBeginPos.x, 0, plotBeginPos.z, Server.getInstance().getLevelByName(plot.getLevelName()));
+        this.pos = new Location(Bukkit.getWorld(plot.getLevelName()), plotBeginPos.getX(), 0, plotBeginPos.getZ());
     }
 
     @Override
-    public void onRun(int i) {
+    public void run() {
         CompletableFuture.runAsync(() -> {
             try {
-                Block block;
-                while (pos.x < xMax) {
-                    while (pos.z < zMax) {
-                        while (pos.y < 256) {
-                            if (pos.y == 0) {
+                Material block;
+                while (pos.getX() < xMax) {
+                    while (pos.getZ() < zMax) {
+                        while (pos.getY() < 256) {
+                            if (pos.getY() == 0) {
                                 block = bottomBlock;
-                            } else if (pos.y < height) {
+                            } else if (pos.getY() < height) {
                                 block = plotFillBlock;
-                            } else if (pos.y == height) {
+                            } else if (pos.getY() == height) {
                                 block = plotFloorBlock;
                             } else {
-                                block = Block.get(0);
+                                block = Material.getMaterial("AIR");
+                                //block = Block.get(0);
+
                             }
-                            level.setBlock(pos, block);
-                            pos.y++;
+                            pos.getBlock().setType(block);
+                            //level.setBlockData(pos, block);
+                            pos.add(0, 1, 0);
                         }
-                        pos.y = 0;
-                        pos.z++;
+                        pos.setY(0);
+                        pos.add(0, 0, 1);
                     }
-                    pos.z = plotBeginPos.z;
-                    pos.x++;
+                    pos.setZ(plotBeginPos.getZ());
+                    pos.add(1, 0, 0);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

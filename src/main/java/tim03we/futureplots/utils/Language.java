@@ -16,8 +16,8 @@ package tim03we.futureplots.utils;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.utils.Config;
 import tim03we.futureplots.FuturePlots;
+import tim03we.futureplots.utils.config.YamlConfig;
 
 import java.io.File;
 import java.util.HashMap;
@@ -31,8 +31,8 @@ public class Language {
     public static void init() {
         messages.clear();
         new File(FuturePlots.getInstance().getDataFolder() + "/lang/").mkdirs();
-        FuturePlots.getInstance().saveResource("lang/" + Settings.language + ".yml");
-        Config m = new Config(FuturePlots.getInstance().getDataFolder() + "/lang/" + Settings.language + ".yml");
+        FuturePlots.getInstance().saveResource("lang/" + Settings.language + ".yml", false);
+        YamlConfig m = new YamlConfig(FuturePlots.getInstance().getDataFolder() + "/lang/" + Settings.language + ".yml");
         for (Map.Entry<String, Object> map : m.getAll().entrySet()) {
             String key = map.getKey();
             if (map.getValue() instanceof String) {

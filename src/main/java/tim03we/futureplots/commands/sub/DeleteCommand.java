@@ -16,8 +16,8 @@ package tim03we.futureplots.commands.sub;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Player;
-import cn.nukkit.command.CommandSender;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.commands.BaseCommand;
 import tim03we.futureplots.utils.Plot;
@@ -40,8 +40,8 @@ public class DeleteCommand extends BaseCommand {
                 if(plot.canByPass((Player) sender)) {
                     if(Settings.economy) {
                         if(!new PlotPlayer((Player) sender).bypassEco()) {
-                            if((FuturePlots.economyProvider.getMoney(sender.getName()) - new PlotSettings(((Player) sender).getLevel().getName()).getDeletePrice()) >= 0) {
-                                FuturePlots.economyProvider.reduceMoney(sender.getName(), new PlotSettings(((Player) sender).getLevel().getName()).getDeletePrice());
+                            if((FuturePlots.economyProvider.getMoney(sender.getName()) - new PlotSettings(((Player) sender).getWorld().getName()).getDeletePrice()) >= 0) {
+                                FuturePlots.economyProvider.reduceMoney(sender.getName(), new PlotSettings(((Player) sender).getWorld().getName()).getDeletePrice());
                             } else {
                                 sender.sendMessage(translate(true, "economy.no.money"));
                                 return;
@@ -52,7 +52,7 @@ public class DeleteCommand extends BaseCommand {
                         FuturePlots.getInstance().resetMerges(plot, true);
                     } else {
                         FuturePlots.provider.deletePlot(plot);
-                        plot.changeBorder(new PlotSettings(player.getLevel().getName()).getWallBlockUnClaimed());
+                        plot.changeBorder(new PlotSettings(player.getWorld().getName()).getWallBlockUnClaimed());
                     }
                     FuturePlots.getInstance().clearPlot(plot);
                     ((Player) sender).teleport(plot.getBorderPosition());

@@ -16,11 +16,11 @@ package tim03we.futureplots.listener;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Player;
-import cn.nukkit.entity.Entity;
-import cn.nukkit.event.EventHandler;
-import cn.nukkit.event.Listener;
-import cn.nukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import tim03we.futureplots.utils.Plot;
 import tim03we.futureplots.utils.PlotPlayer;
 import tim03we.futureplots.utils.Settings;
@@ -31,7 +31,7 @@ public class EntityShootBow implements Listener {
     public void onShoot(EntityShootBowEvent event) {
         Entity entity = event.getEntity();
         if(entity instanceof Player) {
-            if(Settings.levels.contains(entity.getLevel().getName())) {
+            if(Settings.levels.contains(entity.getWorld().getName())) {
                 if(!((Player) entity).isOp()) {
                     Plot plot = new PlotPlayer((Player) entity).getPlot();
                     if(plot == null || !plot.canInteract((Player) entity)) {

@@ -16,10 +16,11 @@ package tim03we.futureplots.utils;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Player;
-import cn.nukkit.Server;
-import cn.nukkit.block.Block;
-import cn.nukkit.level.Position;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.tasks.PlotSetBorderTask;
 
@@ -59,16 +60,16 @@ public class Plot {
         return this.levelName;
     }
 
-    public Position getPosition() {
+    public Location getPosition() {
         return FuturePlots.getInstance().getPlotPosition(getPlot(x, z, levelName));
     }
 
-    public Position getBorderPosition() {
+    public Location getBorderPosition() {
         return FuturePlots.getInstance().getPlotBorderPosition(getPlot(x, z, levelName));
     }
 
-    public void changeBorder(Block block) {
-        Server.getInstance().getScheduler().scheduleDelayedTask(FuturePlots.getInstance(), new PlotSetBorderTask(getPlot(x, z, levelName), block), 1, true);
+    public void changeBorder(Material block) {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(FuturePlots.getInstance(), new PlotSetBorderTask(getPlot(x, z, levelName), block));
     }
 
     public boolean canByPass(Player player) {
@@ -83,7 +84,7 @@ public class Plot {
                 return true;
             } else {
                 if(FuturePlots.provider.isMember(player.getName(), getPlot())) {
-                    Player target = Server.getInstance().getPlayer(FuturePlots.provider.getOwner(getPlot()));
+                    Player target = Bukkit.getPlayer(FuturePlots.provider.getOwner(getPlot()));
                     return target != null;
                 }
             }

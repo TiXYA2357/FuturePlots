@@ -16,8 +16,8 @@ package tim03we.futureplots.commands.sub;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Player;
-import cn.nukkit.command.CommandSender;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.commands.BaseCommand;
 import tim03we.futureplots.utils.Plot;
@@ -39,8 +39,8 @@ public class ErodeCommand extends BaseCommand {
                 if(plot.canByPass((Player) sender)) {
                     if(Settings.economy) {
                         if(!new PlotPlayer((Player) sender).bypassEco()) {
-                            if((FuturePlots.economyProvider.getMoney(sender.getName()) - new PlotSettings(((Player) sender).getLevel().getName()).getErodePrice()) >= 0) {
-                                FuturePlots.economyProvider.reduceMoney(sender.getName(), new PlotSettings(((Player) sender).getLevel().getName()).getErodePrice());
+                            if((FuturePlots.economyProvider.getMoney(sender.getName()) - new PlotSettings(((Player) sender).getWorld().getName()).getErodePrice()) >= 0) {
+                                FuturePlots.economyProvider.reduceMoney(sender.getName(), new PlotSettings(((Player) sender).getWorld().getName()).getErodePrice());
                             } else {
                                 sender.sendMessage(translate(true, "economy.no.money"));
                                 return;

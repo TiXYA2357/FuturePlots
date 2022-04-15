@@ -16,10 +16,8 @@ package tim03we.futureplots.commands;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.command.Command;
-import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
-import cn.nukkit.command.data.CommandParameter;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.handler.CommandHandler;
 
@@ -29,13 +27,15 @@ import java.util.HashMap;
 public class MainCommand extends Command {
 
     public MainCommand() {
-        super(FuturePlots.cmds.getString("plot.name"), FuturePlots.cmds.getString("plot.description"), FuturePlots.cmds.getString("plot.usage"));
-        setAliases(FuturePlots.cmds.getStringList("plot.alias").toArray(new String[0]));
-        commandParameters.clear();
+        super(FuturePlots.cmds.getString("plot.name"));
+        setUsage(FuturePlots.cmds.getString("plot.usage"));
+        setDescription(FuturePlots.cmds.getString("plot.description"));
+        setAliases(FuturePlots.cmds.getStringList("plot.alias"));
+        /*commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
                 new CommandParameter(FuturePlots.cmds.getString("plot.parameters.subcommand"), false, convertToStringArray(CommandHandler.commmands, CommandHandler.aliases)),
                 new CommandParameter(FuturePlots.cmds.getString("plot.parameters.player"), CommandParamType.TARGET, true)
-        });
+        });*/
     }
 
     @Override

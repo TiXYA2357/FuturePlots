@@ -16,11 +16,11 @@ package tim03we.futureplots.utils;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Server;
-import cn.nukkit.block.Block;
-import cn.nukkit.level.Level;
-import cn.nukkit.utils.Config;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.World;
 import tim03we.futureplots.FuturePlots;
+import tim03we.futureplots.utils.config.YamlConfig;
 
 public class PlotSettings {
 
@@ -30,97 +30,102 @@ public class PlotSettings {
         this.levelName = levelName;
     }
 
-    public Config getConfig() {
-        return new Config(FuturePlots.getInstance().getDataFolder() + "/worlds/" + levelName + ".yml", Config.YAML);
+    public YamlConfig getDefaultConfig() {
+        return new YamlConfig(FuturePlots.getInstance().getDataFolder() + "/config.yml");
     }
 
-    public Level getLevel() {
-        return Server.getInstance().getLevelByName(levelName);
+    public YamlConfig getWorldConfig() {
+        return new YamlConfig(FuturePlots.getInstance().getDataFolder() + "/worlds/" + this.levelName + ".yml");
     }
 
-    public Block getWallBlockClaimed() {
-        String[] ex = getConfig().getString("settings.wall.claimed").split(":");
-        return Block.get(Integer.parseInt(ex[0]), Integer.parseInt(ex[1]));
+    public World getLevel() {
+        return Bukkit.getWorld(levelName);
     }
 
-    public Block getWallBlockUnClaimed() {
-        String[] ex = getConfig().getString("settings.wall.unclaimed").split(":");
-        return Block.get(Integer.parseInt(ex[0]), Integer.parseInt(ex[1]));
+    public Material getWallBlockClaimed() {
+        String ex = getWorldConfig().getString("settings.wall.claimed");
+        return Material.getMaterial(ex);
     }
 
-    public Block getRoadBlock() {
-        String[] ex = getConfig().getString("settings.roadBlock").split(":");
-        return Block.get(Integer.parseInt(ex[0]), Integer.parseInt(ex[1]));
+    public Material getWallBlockUnClaimed() {
+        String ex = getWorldConfig().getString("settings.wall.unclaimed");
+        return Material.getMaterial(ex);
+    }
+
+    public Material getRoadBlock() {
+        String ex = getWorldConfig().getString("settings.roadBlock");
+        return Material.getMaterial(ex);
     }
 
     public int getRoadWidth() {
-        return getConfig().getInt("settings.roadWidth");
+        return getWorldConfig().getInt("settings.roadWidth");
     }
 
     public int getGroundHeight() {
-        return getConfig().getInt("settings.groundHeight");
+        return getWorldConfig().getInt("settings.groundHeight");
     }
 
     public int getPlotSize() {
-        return getConfig().getInt("settings.plotSize");
+        return getWorldConfig().getInt("settings.plotSize");
     }
 
-    public Block getBottomBlock() {
-        String[] ex = getConfig().getString("settings.bottomBlock").split(":");
-        return Block.get(Integer.parseInt(ex[0]), Integer.parseInt(ex[1]));
+    public Material getBottomBlock() {
+        String ex = getWorldConfig().getString("settings.bottomBlock");
+        return Material.getMaterial(ex);
     }
 
-    public Block getPlotFloorBlock() {
-        String[] ex = getConfig().getString("settings.plotFloorBlock").split(":");
-        return Block.get(Integer.parseInt(ex[0]), Integer.parseInt(ex[1]));
+    public Material getPlotFloorBlock() {
+        String ex = getWorldConfig().getString("settings.plotFloorBlock");
+        return Material.getMaterial(ex);
     }
 
-    public Block getPlotFillBlock() {
-        String[] ex = getConfig().getString("settings.plotFillBlock").split(":");
-        return Block.get(Integer.parseInt(ex[0]), Integer.parseInt(ex[1]));
+    public Material getPlotFillBlock() {
+        String ex = getWorldConfig().getString("settings.plotFillBlock");
+        return Material.getMaterial(ex);
     }
 
     public int getClaimPrice() {
-        return getConfig().getInt("settings.price.claim");
+        return getWorldConfig().getInt("settings.price.claim");
     }
 
     public int getClearPrice() {
-        return getConfig().getInt("settings.price.clear");
+        return getWorldConfig().getInt("settings.price.clear");
     }
 
     public int getDeletePrice() {
-        return getConfig().getInt("settings.price.delete");
+        return getWorldConfig().getInt("settings.price.delete");
     }
 
     public int getDisposePrice() {
-        return getConfig().getInt("settings.price.dispose");
+        return getWorldConfig().getInt("settings.price.dispose");
     }
 
     public int getErodePrice() {
-        return getConfig().getInt("settings.price.erode");
+        return getWorldConfig().getInt("settings.price.erode");
     }
 
     public int getMergePrice() {
-        return getConfig().getInt("settings.price.merge");
+        return getWorldConfig().getInt("settings.price.merge");
     }
 
     public void initWorld() {
-        Config worldConfig = getConfig();
-        if(!worldConfig.exists("settings.wall.unclaimed")) worldConfig.set("settings.wall.unclaimed", Settings.wallBlockUnClaimed);
-        if(!worldConfig.exists("settings.wall.claimed")) worldConfig.set("settings.wall.claimed", Settings.wallBlockClaimed);
-        if(!worldConfig.exists("settings.roadBlock")) worldConfig.set("settings.roadBlock", Settings.roadBlock);
-        if(!worldConfig.exists("settings.roadWidth")) worldConfig.set("settings.roadWidth", Settings.roadWidth);
-        if(!worldConfig.exists("settings.groundHeight")) worldConfig.set("settings.groundHeight", Settings.groundHeight);
-        if(!worldConfig.exists("settings.plotSize")) worldConfig.set("settings.plotSize", Settings.plotSize);
-        if(!worldConfig.exists("settings.bottomBlock")) worldConfig.set("settings.bottomBlock", Settings.bottomBlock);
-        if(!worldConfig.exists("settings.plotFloorBlock")) worldConfig.set("settings.plotFloorBlock", Settings.plotFloorBlock);
-        if(!worldConfig.exists("settings.plotFillBlock")) worldConfig.set("settings.plotFillBlock", Settings.plotFillBlock);
-        if(!worldConfig.exists("settings.price.claim")) worldConfig.set("settings.price.claim", Settings.claim_price);
-        if(!worldConfig.exists("settings.price.clear")) worldConfig.set("settings.price.clear", Settings.clear_price);
-        if(!worldConfig.exists("settings.price.delete")) worldConfig.set("settings.price.delete", Settings.delete_price);
-        if(!worldConfig.exists("settings.price.dispose")) worldConfig.set("settings.price.dispose", Settings.dispose_price);
-        if(!worldConfig.exists("settings.price.erode")) worldConfig.set("settings.price.erode", Settings.erode_price);
-        if(!worldConfig.exists("settings.price.merge")) worldConfig.set("settings.price.merge", Settings.merge_price);
+        YamlConfig defaultConfig = getDefaultConfig();
+        YamlConfig worldConfig = new YamlConfig(FuturePlots.getInstance().getDataFolder() + "/worlds/" + this.levelName + ".yml");
+        if(!worldConfig.exists("settings.wall.unclaimed")) worldConfig.set("settings.wall.unclaimed", defaultConfig.getString("default-settings.wall.unclaimed"));
+        if(!worldConfig.exists("settings.wall.claimed")) worldConfig.set("settings.wall.claimed", defaultConfig.getString("default-settings.wall.claimed"));
+        if(!worldConfig.exists("settings.roadBlock")) worldConfig.set("settings.roadBlock", defaultConfig.getString("default-settings.roadBlock"));
+        if(!worldConfig.exists("settings.roadWidth")) worldConfig.set("settings.roadWidth", defaultConfig.getInt("default-settings.roadWidth"));
+        if(!worldConfig.exists("settings.groundHeight")) worldConfig.set("settings.groundHeight", defaultConfig.getInt("default-settings.groundHeight"));
+        if(!worldConfig.exists("settings.plotSize")) worldConfig.set("settings.plotSize", defaultConfig.getInt("default-settings.plotSize"));
+        if(!worldConfig.exists("settings.bottomBlock")) worldConfig.set("settings.bottomBlock", defaultConfig.getString("default-settings.bottomBlock"));
+        if(!worldConfig.exists("settings.plotFloorBlock")) worldConfig.set("settings.plotFloorBlock", defaultConfig.getString("default-settings.plotFloorBlock"));
+        if(!worldConfig.exists("settings.plotFillBlock")) worldConfig.set("settings.plotFillBlock", defaultConfig.getString("default-settings.plotFillBlock"));
+        if(!worldConfig.exists("settings.price.claim")) worldConfig.set("settings.price.claim", defaultConfig.getInt("default-settings.price.claim"));
+        if(!worldConfig.exists("settings.price.clear")) worldConfig.set("settings.price.clear", defaultConfig.getInt("default-settings.price.clear"));
+        if(!worldConfig.exists("settings.price.delete")) worldConfig.set("settings.price.delete", defaultConfig.getInt("default-settings.price.delete"));
+        if(!worldConfig.exists("settings.price.dispose")) worldConfig.set("settings.price.dispose", defaultConfig.getInt("default-settings.price.dispose"));
+        if(!worldConfig.exists("settings.price.erode")) worldConfig.set("settings.price.erode", defaultConfig.getInt("default-settings.price.erode"));
+        if(!worldConfig.exists("settings.price.merge")) worldConfig.set("settings.price.merge", defaultConfig.getInt("default-settings.price.merge"));
         worldConfig.save();
     }
 }

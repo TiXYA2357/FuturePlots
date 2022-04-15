@@ -16,16 +16,14 @@ package tim03we.futureplots.commands.sub;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Player;
-import cn.nukkit.command.CommandSender;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.commands.BaseCommand;
 import tim03we.futureplots.utils.Plot;
 import tim03we.futureplots.utils.PlotPlayer;
 import tim03we.futureplots.utils.PlotSettings;
 import tim03we.futureplots.utils.Settings;
-
-import static tim03we.futureplots.utils.Settings.max_plots;
 
 public class AutoCommand extends BaseCommand {
 
@@ -41,7 +39,7 @@ public class AutoCommand extends BaseCommand {
                 return;
             }
             if(Settings.levels.size() > 1) {
-                if(!Settings.levels.contains(((Player) sender).getLevel().getName())) {
+                if(!Settings.levels.contains(((Player) sender).getWorld().getName())) {
                     sender.sendMessage(translate(true, "not.in.world"));
                     return;
                 }
@@ -50,8 +48,8 @@ public class AutoCommand extends BaseCommand {
                 if(FuturePlots.provider.getPlots(sender.getName(), null).size() != Settings.max_plots) {
                     if(Settings.economy) {
                         if(!new PlotPlayer((Player) sender).bypassEco()) {
-                            if((FuturePlots.economyProvider.getMoney(sender.getName()) - new PlotSettings(((Player) sender).getLevel().getName()).getClaimPrice()) >= 0) {
-                                FuturePlots.economyProvider.reduceMoney(sender.getName(), new PlotSettings(((Player) sender).getLevel().getName()).getClaimPrice());
+                            if((FuturePlots.economyProvider.getMoney(sender.getName()) - new PlotSettings(((Player) sender).getWorld().getName()).getClaimPrice()) >= 0) {
+                                FuturePlots.economyProvider.reduceMoney(sender.getName(), new PlotSettings(((Player) sender).getWorld().getName()).getClaimPrice());
                             } else {
                                 sender.sendMessage(translate(true, "economy.no.money"));
                                 return;

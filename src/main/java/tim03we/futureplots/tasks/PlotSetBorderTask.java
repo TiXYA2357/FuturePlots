@@ -16,55 +16,51 @@ package tim03we.futureplots.tasks;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.block.Block;
-import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
-import cn.nukkit.math.Vector3;
-import cn.nukkit.scheduler.Task;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.utils.Plot;
 import tim03we.futureplots.utils.PlotSettings;
 
 import java.util.concurrent.CompletableFuture;
 
-public class PlotSetBorderTask extends Task {
+public class PlotSetBorderTask implements Runnable {
 
-    private Level level;
+    private World level;
     private int height;
-    private Block plotWallBlock;
-    private Position plotBeginPos;
+    private Material plotWallBlock;
+    private Location plotBeginPos;
     private double xMax, zMax;
 
-    public PlotSetBorderTask(Plot plot, Block block) {
+    public PlotSetBorderTask(Plot plot, Material block) {
         PlotSettings plotSettings = new PlotSettings(plot.getLevelName());
         this.plotBeginPos = FuturePlots.getInstance().getPlotPosition(plot);
-        this.level = plotBeginPos.getLevel();
+        this.level = plotBeginPos.getWorld();
         this.plotBeginPos = plotBeginPos.subtract(1,0,1);
         int plotSize = plotSettings.getPlotSize();
-        this.xMax = plotBeginPos.x + plotSize + 1;
-        this.zMax = plotBeginPos.z + plotSize + 1;
+        this.xMax = plotBeginPos.getX() + plotSize + 1;
+        this.zMax = plotBeginPos.getZ() + plotSize + 1;
         this.height = plotSettings.getGroundHeight();
         this.plotWallBlock = block;
     }
 
     @Override
-    public void onRun(int i) {
-        CompletableFuture.runAsync(() -> {
-            try {
-                double x;
-                double z;
+    public void run() {
+        try {
+            double x;
+            double z;
 
-                for (x = plotBeginPos.x; x <= xMax; x++) {
-                    level.setBlock(new Vector3(x, height + 1, plotBeginPos.z), plotWallBlock);
-                    level.setBlock(new Vector3(x, height + 1, zMax), plotWallBlock);
-                }
-                for (z = plotBeginPos.z; z <= zMax; z++) {
-                    level.setBlock(new Vector3(plotBeginPos.x, height + 1, z), plotWallBlock);
-                    level.setBlock(new Vector3(xMax, height + 1, z), plotWallBlock);
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            for (x = plotBeginPos.getX(); x <= xMax; x++) {
+                level.getBlockAt(new Location(plotBeginPos.getWorld(), x, height + 1, plotBeginPos.getZ())).setType(plotWallBlock);
+                level.getBlockAt(new Location(plotBeginPos.getWorld(), x, height + 1, zMax)).setType(plotWallBlock);
             }
-        });
+            for (z = plotBeginPos.getZ(); z <= zMax; z++) {
+                level.getBlockAt(new Location(plotBeginPos.getWorld(), plotBeginPos.getX(), height + 1, z)).setType(plotWallBlock);
+                level.getBlockAt(new Location(plotBeginPos.getWorld(), xMax, height + 1, z)).setType(plotWallBlock);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

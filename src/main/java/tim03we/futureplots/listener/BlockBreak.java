@@ -16,12 +16,11 @@ package tim03we.futureplots.listener;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Player;
-import cn.nukkit.Server;
-import cn.nukkit.block.Block;
-import cn.nukkit.event.EventHandler;
-import cn.nukkit.event.Listener;
-import cn.nukkit.event.block.BlockBreakEvent;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.events.PlotBlockEvent;
 import tim03we.futureplots.events.PlotEvent;
@@ -34,7 +33,7 @@ public class BlockBreak implements Listener {
     public void onBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         Block block = event.getBlock();
-        if(Settings.levels.contains(player.getLevel().getName())) {
+        if(Settings.levels.contains(player.getWorld().getName())) {
             Plot plot = FuturePlots.getInstance().getPlotByPosition(event.getBlock().getLocation());
             new PlotEvent(new PlotBlockEvent(FuturePlots.getInstance(), event, plot));
             if(!player.isOp()) {

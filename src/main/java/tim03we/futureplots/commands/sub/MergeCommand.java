@@ -16,9 +16,9 @@ package tim03we.futureplots.commands.sub;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Player;
-import cn.nukkit.command.CommandSender;
-import cn.nukkit.math.BlockFace;
+import org.bukkit.block.BlockFace;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.commands.BaseCommand;
 import tim03we.futureplots.utils.*;
@@ -39,15 +39,15 @@ public class MergeCommand extends BaseCommand {
             }
             if(Settings.economy) {
                 if(!new PlotPlayer((Player) sender).bypassEco()) {
-                    if((FuturePlots.economyProvider.getMoney(sender.getName()) - new PlotSettings(((Player) sender).getLevel().getName()).getMergePrice()) >= 0) {
-                        FuturePlots.economyProvider.reduceMoney(sender.getName(), new PlotSettings(((Player) sender).getLevel().getName()).getMergePrice());
+                    if((FuturePlots.economyProvider.getMoney(sender.getName()) - new PlotSettings(((Player) sender).getWorld().getName()).getMergePrice()) >= 0) {
+                        FuturePlots.economyProvider.reduceMoney(sender.getName(), new PlotSettings(((Player) sender).getWorld().getName()).getMergePrice());
                     } else {
                         sender.sendMessage(translate(true, "economy.no.money"));
                         return;
                     }
                 }
             }
-            Plot plot = FuturePlots.getInstance().getPlotByPosition(player.getPosition());
+            Plot plot = FuturePlots.getInstance().getPlotByPosition(player.getLocation());
             if(plot == null) {
                 player.sendMessage(Language.translate(true, "not.in.plot"));
                 return;
@@ -56,7 +56,7 @@ public class MergeCommand extends BaseCommand {
                 player.sendMessage(Language.translate(true, "not.a.owner"));
                 return;
             }
-            BlockFace direction = player.getDirection();
+            BlockFace direction = player.getFacing();
             FuturePlots.getInstance().mergePlots(player, plot, direction);
         }
     }

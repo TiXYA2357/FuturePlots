@@ -16,12 +16,13 @@ package tim03we.futureplots.events;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Server;
-import cn.nukkit.event.Event;
+
+import org.bukkit.Bukkit;
+import org.bukkit.event.Event;
 
 public class PlotEvent {
 
     public PlotEvent(Event event) {
-        Server.getInstance().getPluginManager().callEvent(event);
+        Bukkit.getPluginManager().callEvent(event);
     }
 }

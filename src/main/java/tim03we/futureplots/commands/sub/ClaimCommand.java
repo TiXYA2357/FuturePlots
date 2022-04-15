@@ -16,9 +16,9 @@ package tim03we.futureplots.commands.sub;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Player;
-import cn.nukkit.command.CommandSender;
-import cn.nukkit.level.Position;
+import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.commands.BaseCommand;
 import tim03we.futureplots.utils.Plot;
@@ -44,18 +44,21 @@ public class ClaimCommand extends BaseCommand {
                     if (!FuturePlots.provider.hasOwner(plot)) {
                         if(Settings.economy) {
                             if(!plotPlayer.bypassEco()) {
-                                if((FuturePlots.economyProvider.getMoney(sender.getName()) - new PlotSettings(((Player) sender).getLevel().getName()).getClaimPrice()) >= 0) {
-                                    FuturePlots.economyProvider.reduceMoney(sender.getName(), new PlotSettings(((Player) sender).getLevel().getName()).getClaimPrice());
+                                if((FuturePlots.economyProvider.getMoney(sender.getName()) - new PlotSettings(((Player) sender).getWorld().getName()).getClaimPrice()) >= 0) {
+                                    FuturePlots.economyProvider.reduceMoney(sender.getName(), new PlotSettings(((Player) sender).getWorld().getName()).getClaimPrice());
                                 } else {
                                     sender.sendMessage(translate(true, "economy.no.money"));
                                     return;
                                 }
                             }
                         }
-                        plot.changeBorder(new PlotSettings(((Player) sender).getLevel().getName()).getWallBlockClaimed());
+                        plot.changeBorder(new PlotSettings(((Player) sender).getWorld().getName()).getWallBlockClaimed());
                         FuturePlots.provider.claimPlot(sender.getName(), plot);
                         if(Settings.claim_tp) {
-                            ((Player) sender).teleport(new Position(plot.getPosition().x += Math.floor(plotSize / 2), plot.getPosition().y += 1.5, plot.getPosition().z -= 1,  plot.getPosition().getLevel()));
+                            double x = plot.getPosition().getX();
+                            double y = plot.getPosition().getY();
+                            double z = plot.getPosition().getZ();
+                            ((Player) sender).teleport(new Location(plot.getPosition().getWorld(), x += Math.floor(plotSize / 2), y += 1.5, z -= 1));
                         }
                         sender.sendMessage(translate(true, "plot.claim"));
                     } else {

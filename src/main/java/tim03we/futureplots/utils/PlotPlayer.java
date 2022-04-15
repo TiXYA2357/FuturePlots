@@ -16,7 +16,7 @@ package tim03we.futureplots.utils;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Player;
+import org.bukkit.entity.Player;
 import tim03we.futureplots.FuturePlots;
 
 public class PlotPlayer {
@@ -28,10 +28,10 @@ public class PlotPlayer {
     }
 
     public Plot getPlot() {
-        if(Settings.levels.contains(player.getLevel().getName())) {
-            Plot plot = FuturePlots.getInstance().getPlotByPosition(player.getPosition());
+        if(Settings.levels.contains(player.getWorld().getName())) {
+            Plot plot = FuturePlots.getInstance().getPlotByPosition(player.getLocation());
             if(plot == null) {
-                Plot merge = FuturePlots.getInstance().isInMergeCheck(player.getPosition());
+                Plot merge = FuturePlots.getInstance().isInMergeCheck(player.getLocation());
                 if(merge != null) {
                     plot = merge;
                 }

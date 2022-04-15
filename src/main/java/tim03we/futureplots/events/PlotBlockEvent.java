@@ -16,8 +16,10 @@ package tim03we.futureplots.events;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.event.Event;
-import cn.nukkit.event.plugin.PluginEvent;
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.server.PluginEvent;
+import org.jetbrains.annotations.NotNull;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.utils.Plot;
 
@@ -38,5 +40,10 @@ public class PlotBlockEvent extends PluginEvent {
 
     public Plot getPlot() {
         return plot;
+    }
+
+    @Override
+    public @NotNull HandlerList getHandlers() {
+        return null;
     }
 }

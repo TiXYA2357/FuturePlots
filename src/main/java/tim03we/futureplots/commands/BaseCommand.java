@@ -16,7 +16,7 @@ package tim03we.futureplots.commands;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.command.CommandSender;
+import org.bukkit.command.CommandSender;
 import tim03we.futureplots.utils.Language;
 
 public class BaseCommand extends Language {

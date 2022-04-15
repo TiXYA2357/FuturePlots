@@ -16,7 +16,7 @@ package tim03we.futureplots.utils;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.utils.Config;
+import org.bukkit.configuration.file.YamlConfiguration;
 import tim03we.futureplots.FuturePlots;
 
 import java.io.File;
@@ -54,7 +54,7 @@ public class Settings {
     public static int auto_save_interval;
 
     public static void init() {
-        Config config = FuturePlots.getInstance().getConfig();
+        YamlConfiguration config = (YamlConfiguration) FuturePlots.getInstance().getConfig();
         File folder = new File(FuturePlots.getInstance().getDataFolder() + "/worlds/");
         for(File file : folder.listFiles()) {
             levels.add(file.getName().replace(".yml", ""));

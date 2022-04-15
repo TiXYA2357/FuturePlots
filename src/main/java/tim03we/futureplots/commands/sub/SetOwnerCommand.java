@@ -16,9 +16,9 @@ package tim03we.futureplots.commands.sub;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Player;
-import cn.nukkit.Server;
-import cn.nukkit.command.CommandSender;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.commands.BaseCommand;
 import tim03we.futureplots.utils.Plot;
@@ -39,7 +39,7 @@ public class SetOwnerCommand extends BaseCommand {
             if (plot != null) {
                 if(args.length > 1) {
                     if (plot.canByPass(player)) {
-                        Player target = Server.getInstance().getPlayerExact(args[1]);
+                        Player target = Bukkit.getPlayerExact(args[1]);
                         String targetName = target == null ? args[1] : target.getName();
                         if(sender.isOp()) {
                             if(target != null) target.sendMessage(translate(true, "plot.setowner.target", plot.getX() + ";" + plot.getZ()));

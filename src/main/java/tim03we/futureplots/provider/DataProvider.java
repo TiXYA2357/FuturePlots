@@ -16,7 +16,7 @@ package tim03we.futureplots.provider;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.level.Location;
+import org.bukkit.Location;
 import tim03we.futureplots.utils.Plot;
 
 import java.util.List;
