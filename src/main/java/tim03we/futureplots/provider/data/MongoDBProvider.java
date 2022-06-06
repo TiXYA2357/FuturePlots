@@ -288,6 +288,7 @@ public class MongoDBProvider implements DataProvider {
     public Plot getOriginPlot(Plot plot) {
         if(!hasOwner(plot)) return null;
         String originString = MongoAPI.find(new Document("_id", plot.getLevelName() + ";" + plot.getFullID())).getString("merge");
+        if(originString == null) return null;
         if(originString.isEmpty()) return null;
         String[] ex = originString.split(";");
         return new Plot(Integer.parseInt(ex[0]), Integer.parseInt(ex[1]), plot.getLevelName());

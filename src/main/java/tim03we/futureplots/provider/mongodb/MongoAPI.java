@@ -18,7 +18,7 @@ public class MongoAPI {
         YamlConfig config = new YamlConfig(FuturePlots.getInstance().getDataFolder() + "/config.yml");
         MongoClientURI mongoClientURI = new MongoClientURI(config.getString("mongodb.uri"));
         mongoClient = new MongoClient(mongoClientURI);
-        mongoDatabase = mongoClient.getDatabase(config.getString(config.getString("mongodb.database")));
+        mongoDatabase = mongoClient.getDatabase(config.getString("mongodb.database"));
     }
 
     public static void change(Document searchDocument, String searchValue, Object newValue) {

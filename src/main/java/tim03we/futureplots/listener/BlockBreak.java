@@ -35,7 +35,7 @@ public class BlockBreak implements Listener {
         Block block = event.getBlock();
         if(Settings.levels.contains(player.getWorld().getName())) {
             Plot plot = FuturePlots.getInstance().getPlotByPosition(event.getBlock().getLocation());
-            new PlotEvent(new PlotBlockEvent(FuturePlots.getInstance(), event, plot));
+            //new PlotEvent(new PlotBlockEvent(FuturePlots.getInstance(), event, plot));
             if(!player.isOp()) {
                 if(plot != null) {
                     if(!plot.canInteract(player)) {

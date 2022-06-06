@@ -17,12 +17,11 @@ package tim03we.futureplots.tasks;
  */
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.utils.Plot;
 import tim03we.futureplots.utils.PlotSettings;
-
-import java.util.concurrent.CompletableFuture;
 
 public class PlotErodeTask implements Runnable {
 
@@ -34,36 +33,34 @@ public class PlotErodeTask implements Runnable {
     private Location pos;
 
     public PlotErodeTask(Plot plot) {
-        /*PlotSettings plotSettings = new PlotSettings(plot.getLevelName());
+        PlotSettings plotSettings = new PlotSettings(plot.getLevelName());
         this.plotBeginPos = FuturePlots.getInstance().getPlotPosition(plot);
-        this.level = plotBeginPos.getLevel();
+        this.level = plotBeginPos.getWorld();
         this.plotSize = plotSettings.getPlotSize();
-        this.xMax = (int) (plotBeginPos.x + plotSize);
-        this.zMax = (int) (plotBeginPos.z + plotSize);
-        this.pos = new Position(plotBeginPos.x, 0, plotBeginPos.z, Server.getInstance().getLevelByName(plot.getLevelName()));*/
+        this.xMax = (int) (plotBeginPos.getX() + plotSize);
+        this.zMax = (int) (plotBeginPos.getZ() + plotSize);
+        this.pos = new Location(this.level, plotBeginPos.getX(), 0, plotBeginPos.getZ());
     }
 
     @Override
     public void run() {
-        /*CompletableFuture.runAsync(() -> {
-            try {
-                while (pos.x < xMax) {
-                    while (pos.z < zMax) {
-                        while (pos.y < 256) {
-                            if (pos.y > 0) {
-                                level.setBlock(pos, Block.get(BlockID.AIR));
-                            }
-                            pos.y++;
+        try {
+            while (pos.getX() < xMax) {
+                while (pos.getZ() < zMax) {
+                    while (pos.getY() < 256) {
+                        if (pos.getY() > 0) {
+                            level.getBlockAt(pos).setType(Material.AIR);
                         }
-                        pos.y = 0;
-                        pos.z++;
+                        pos.add(0, 1, 0);
                     }
-                    pos.z = plotBeginPos.z;
-                    pos.x++;
+                    pos.setY(0);
+                    pos.add(0, 0, 1);
                 }
-            } catch (Exception ex) {
-                ex.printStackTrace();
+                pos.setZ(plotBeginPos.getZ());
+                pos.add(1, 0, 0);
             }
-        });*/
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

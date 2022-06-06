@@ -19,6 +19,7 @@ package tim03we.futureplots.tasks;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.utils.Plot;
@@ -42,7 +43,7 @@ public class BorderCorrectionTask implements Runnable {
     private Location pos;
 
     public BorderCorrectionTask(FuturePlots plugin, Plot start, Plot end) {
-        /*this.plugin = plugin;
+        this.plugin = plugin;
         this.start = start;
         this.end = end;
 
@@ -79,19 +80,18 @@ public class BorderCorrectionTask implements Runnable {
             this.zMax = this.plotBeginPos.getBlockZ() + plotSize;
             this.direction = BlockFace.WEST;
         }
-        this.pos = new Location(this.plotBeginPos.getWorld(), this.plotBeginPos.getX(), 0, this.plotBeginPos.getZ());*/
+        this.pos = new Location(this.plotBeginPos.getWorld(), this.plotBeginPos.getX(), 0, this.plotBeginPos.getZ());
     }
 
     @Override
     public void run() {
-       /* if(this.direction == BlockFace.NORTH || this.direction == BlockFace.SOUTH) {
+       if(this.direction == BlockFace.NORTH || this.direction == BlockFace.SOUTH) {
             while(this.pos.getZ() < this.zMax) {
                 while(this.pos.getY() < 255) {
                     Material block;
                     if(this.pos.getY() > this.height + 1) {
                         block = Material.AIR;
                     } else if(this.pos.getY() == this.height + 1) {
-                        //block = this.plotWallBlock;
                         block = this.plotWallBlock;
                     } else if(this.pos.getY() == this.height) {
                         block = this.roadBlock;
@@ -108,27 +108,27 @@ public class BorderCorrectionTask implements Runnable {
                 this.pos.add(0, 0, 1);
             }
         } else {
-            while (this.pos.x < this.xMax) {
-                while (this.pos.y < 255) {
-                    Block block;
-                    if(this.pos.y > this.height + 1) {
-                        block = Block.get(BlockID.AIR);
-                    } else if(this.pos.y == this.height + 1) {
+            while (this.pos.getX() < this.xMax) {
+                while (this.pos.getY() < 255) {
+                    Material block;
+                    if(this.pos.getY() > this.height + 1) {
+                        block = Material.AIR;
+                    } else if(this.pos.getY() == this.height + 1) {
                         block = this.plotWallBlock;
-                    } else if(this.pos.y == this.height) {
+                    } else if(this.pos.getY() == this.height) {
                         block = this.roadBlock;
-                    } else if(this.pos.y == 0) {
+                    } else if(this.pos.getY() == 0) {
                         block = this.bottomBlock;
                     } else {
                         block = this.groundBlock;
                     }
-                    this.level.setBlock(new Vector3(this.pos.x, this.pos.y, this.pos.z - 1), block, false);
-                    this.level.setBlock(new Vector3(this.pos.x, this.pos.y, this.zMax), block, false);
-                    this.pos.y++;
+                    this.level.getBlockAt(new Location(this.level, this.pos.getX(), this.pos.getY(), this.pos.getZ() - 1)).setType(block);
+                    this.level.getBlockAt(new Location(this.level, this.pos.getX(), this.pos.getY(), this.zMax)).setType(block);
+                    this.pos.add(0, 1, 0);
                 }
-                this.pos.y = 0;
-                this.pos.x++;
+                this.pos.setY(0);
+                this.pos.add(1, 0, 0);
             }
-        }*/
+        }
     }
 }

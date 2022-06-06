@@ -36,9 +36,12 @@ public class PlayerInteract implements Listener {
         Player player = event.getPlayer();
         if(Settings.levels.contains(player.getWorld().getName())) {
             if(!player.isOp()) {
-                Plot plot = FuturePlots.getInstance().getPlotByPosition(event.getClickedBlock().getLocation());
                 if(event.getMaterial().isEdible() && event.getAction() == Action.RIGHT_CLICK_AIR) {
                     return;
+                }
+                Plot plot = null;
+                if(event.getClickedBlock() != null) {
+                    plot = FuturePlots.getInstance().getPlotByPosition(event.getClickedBlock().getLocation());
                 }
                 if(plot != null) {
                     if(!plot.canInteract(player)) {
@@ -86,15 +89,20 @@ public class PlayerInteract implements Listener {
                         }
                     }
                 } else {
-                    Plot merge = FuturePlots.getInstance().isInMergeCheck(event.getClickedBlock().getLocation());
-                    if(merge == null) {
-                        event.setCancelled(true);
-                    } else {
-                        if(FuturePlots.provider.getOriginPlot(merge) != null && FuturePlots.provider.getMerges(merge).isEmpty()) {
-                            merge = FuturePlots.provider.getOriginPlot(merge);
-                        }
-                        if(!merge.canInteract(player)) {
+                    if(event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+                        player.sendMessage(event.getClickedBlock().getLocation().toString());
+                        Plot merge = FuturePlots.getInstance().isInMergeCheck(event.getClickedBlock().getLocation());
+                        if(merge == null) {
+                            System.out.println("LOL");
                             event.setCancelled(true);
+                        } else {
+                            if(FuturePlots.provider.getOriginPlot(merge) != null && FuturePlots.provider.getMerges(merge).isEmpty()) {
+                                merge = FuturePlots.provider.getOriginPlot(merge);
+                            }
+                            if(!merge.canInteract(player)) {
+                                System.out.println("LOL 2");
+                                event.setCancelled(true);
+                            }
                         }
                     }
                 }

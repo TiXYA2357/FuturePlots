@@ -1,9 +1,9 @@
 package tim03we.futureplots.listener;
 
+import io.papermc.paper.event.player.PlayerItemFrameChangeEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockPistonEvent;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.utils.Plot;
 import tim03we.futureplots.utils.Settings;
@@ -11,9 +11,9 @@ import tim03we.futureplots.utils.Settings;
 public class ItemFrameDropItem implements Listener {
 
     @EventHandler
-    public void on(BlockPistonEvent event) {
-        /*Player player = event.getPlayer();
-        if(Settings.levels.contains(player.getLevel().getName())) {
+    public void on(PlayerItemFrameChangeEvent event) {
+        Player player = event.getPlayer();
+        if(Settings.levels.contains(player.getWorld().getName())) {
             Plot plot = FuturePlots.getInstance().getPlotByPosition(event.getItemFrame().getLocation());
             if(!player.isOp()) {
                 if(plot != null) {
@@ -24,6 +24,6 @@ public class ItemFrameDropItem implements Listener {
                     event.setCancelled(true);
                 }
             }
-        }*/
+        }
     }
 }

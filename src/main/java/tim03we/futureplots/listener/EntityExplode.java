@@ -16,6 +16,7 @@ package tim03we.futureplots.listener;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -30,17 +31,29 @@ public class EntityExplode implements Listener {
 
     @EventHandler
     public void onExplosion(EntityExplodeEvent event) {
-        /*Entity entity = event.getEntity();
+        Entity entity = event.getEntity();
+        if(event.isCancelled()) return;
+        if(Settings.levels.contains(entity.getWorld().getName())) {
+            for (Block block : event.blockList()) {
+                Plot plot = FuturePlots.getInstance().getPlotByPosition(block.getLocation());
+                if(plot == null) {
+                    event.setCancelled(true);
+                }
+            }
+        }
+        /*
+        Entity entity = event.getEntity();
         if(event.isCancelled()) return;
         if(Settings.levels.contains(entity.getWorld().getName())) {
             ArrayList<Block> allowedBlocks = new ArrayList<>();
-            for (Block block : event.get()) {
+            for (Block block : event.blockList()) {
                 Plot plot = FuturePlots.getInstance().getPlotByPosition(block.getLocation());
                 if(plot != null) {
                     allowedBlocks.add(block);
                 }
             }
-            event.setBlockList(allowedBlocks);
-        }*/
+            event.b(allowedBlocks);
+        }
+         */
     }
 }

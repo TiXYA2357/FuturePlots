@@ -32,7 +32,7 @@ import tim03we.futureplots.commands.*;
 import tim03we.futureplots.commands.sub.*;
 import tim03we.futureplots.generator.PlotGenerator;
 import tim03we.futureplots.handler.CommandHandler;
-import tim03we.futureplots.listener.PlayerMove;
+import tim03we.futureplots.listener.*;
 import tim03we.futureplots.provider.*;
 import tim03we.futureplots.provider.data.MongoDBProvider;
 import tim03we.futureplots.provider.data.MySQLProvider;
@@ -97,16 +97,15 @@ public class FuturePlots extends JavaPlugin {
 
     private void registerEvents() {
         PluginManager pm = getServer().getPluginManager();
-        /*pm.registerEvents(new BlockBreak(), this);
+        pm.registerEvents(new BlockBreak(), this);
         pm.registerEvents(new BlockBurn(), this);
-        pm.registerEvents(new BlockPiston(), this);
+        //pm.registerEvents(new BlockPiston(), this);
         pm.registerEvents(new BlockPlace(), this);
         pm.registerEvents(new EntityExplode(), this);
         pm.registerEvents(new EntityShootBow(), this);
         pm.registerEvents(new ItemFrameDropItem(), this);
         pm.registerEvents(new LiquidFlow(), this);
         pm.registerEvents(new PlayerInteract(), this);
-         */
         pm.registerEvents(new PlayerMove(), this);
     }
 
@@ -118,7 +117,7 @@ public class FuturePlots extends JavaPlugin {
                 Language.init();
             }
         }
-        if(!getConfig().getString("version").equals("1.2.3")) {
+        if(!getConfig().getString("version").equals("1.2.4")) {
             new File(getDataFolder() + "/config_old.yml").delete();
             if(new File(getDataFolder() + "/config.yml").renameTo(new File(getDataFolder() + "/config_old.yml"))) {
                 getLogger().warning("The version of the configuration does not match. You will find the old file marked \"config_old.yml\" in the same directory.");
@@ -235,13 +234,13 @@ public class FuturePlots extends JavaPlugin {
     }
 
     public void clearPlot(Plot plot) {
-        //clearEntities(plot);
-        //getServer().getScheduler().scheduleDelayedTask(this, new PlotClearTask(plot), 1, true);
+        clearEntities(plot);
+        getServer().getScheduler().scheduleSyncDelayedTask(this, new PlotClearTask(plot));
     }
 
     public void erodePlot(Plot plot) {
         clearEntities(plot);
-        //getServer().getScheduler().scheduleDelayedTask(this, new PlotErodeTask(plot), 1, true);
+        getServer().getScheduler().scheduleSyncDelayedTask(this, new PlotErodeTask(plot));
     }
 
     public int claimAvailable(Player player) {
@@ -593,29 +592,40 @@ public class FuturePlots extends JavaPlugin {
     public Plot isInMergeCheck(Location position) {
         boolean checkNext = true;
         Plot inPlot = null;
-        Location newPos = position;
         PlotSettings plotSettings = new PlotSettings(position.getWorld().getName());
-        Plot plot1 = FuturePlots.getInstance().getPlotByPosition(newPos.add(plotSettings.getRoadWidth(), 0, 0));
-        Plot plot2 = FuturePlots.getInstance().getPlotByPosition(newPos.add(-plotSettings.getRoadWidth(), 0, 0));
+        Location newPos1 = position.add(plotSettings.getRoadWidth(), 0, 0);
+        Location newPos2 = position.subtract(plotSettings.getRoadWidth(), 0, 0);
+        System.out.println("Road Width: " + plotSettings.getRoadWidth());
+        Plot plot1 = FuturePlots.getInstance().getPlotByPosition(newPos1);
+        Plot plot2 = FuturePlots.getInstance().getPlotByPosition(newPos2);
+        System.out.println(plot1 == null ? "Plot 1 ist NULL (" + newPos1 + ")" : "Plot 1 ist nicht NULL (" + newPos1 + ")");
+        System.out.println(plot2 == null ? "Plot 2 ist NULL (" + newPos2 + ")" : "Plot 2 ist nicht NULL (" + newPos2 + ")");
+        //System.out.println("Plot 2 Location: " + newPos2.add(-plotSettings.getRoadWidth(), 0, 0).getX() + ":" + newPos2.add(-plotSettings.getRoadWidth(), 0, 0).getZ());
+        //System.out.println("Plot 1: " + plot1.getFullID());
+        //System.out.println("Plot 2: " + plot2.getFullID());
         if(plot1 != null && plot2 != null &&
                 FuturePlots.getInstance().isMergeCheck(plot1, plot2)) { // Check X side
             checkNext = false;
             inPlot = plot1;
+            System.out.println("1");
         }
         if(checkNext) {
-            newPos = position;
-            plot1 = FuturePlots.getInstance().getPlotByPosition(newPos.add(0, 0, plotSettings.getRoadWidth()));
-            plot2 = FuturePlots.getInstance().getPlotByPosition(newPos.add(0, 0, -plotSettings.getRoadWidth()));
+            newPos1 = position;
+            newPos2 = position;
+            plot1 = FuturePlots.getInstance().getPlotByPosition(newPos1.add(0, 0, plotSettings.getRoadWidth()));
+            plot2 = FuturePlots.getInstance().getPlotByPosition(newPos2.add(0, 0, -plotSettings.getRoadWidth()));
             if(plot1 != null && plot2 != null &&
                     FuturePlots.getInstance().isMergeCheck(plot1, plot2)) { // Check Z side
                 checkNext = false;
                 inPlot = plot1;
+                System.out.println("2");
             }
         }
         if(checkNext) { // SOUTH WEST to NORTH EAST
-            newPos = position;
-            plot1 = FuturePlots.getInstance().getPlotByPosition(newPos.add(-plotSettings.getRoadWidth(), 0, plotSettings.getRoadWidth()));
-            plot2 = FuturePlots.getInstance().getPlotByPosition(newPos.add(plotSettings.getRoadWidth(), 0, -plotSettings.getRoadWidth()));
+            newPos1 = position;
+            newPos2 = position;
+            plot1 = FuturePlots.getInstance().getPlotByPosition(newPos1.add(-plotSettings.getRoadWidth(), 0, plotSettings.getRoadWidth()));
+            plot2 = FuturePlots.getInstance().getPlotByPosition(newPos2.add(plotSettings.getRoadWidth(), 0, -plotSettings.getRoadWidth()));
             if(plot1 != null && plot2 != null &&
                     FuturePlots.getInstance().isMergeCheck(plot1, FuturePlots.getInstance().getMergeByBlockFace(plot1, BlockFace.NORTH)) &&
                     FuturePlots.getInstance().isMergeCheck(plot2, FuturePlots.getInstance().getMergeByBlockFace(plot2, BlockFace.SOUTH)) &&
@@ -623,6 +633,7 @@ public class FuturePlots extends JavaPlugin {
                     FuturePlots.getInstance().isMergeCheck(plot2, FuturePlots.getInstance().getMergeByBlockFace(plot2, BlockFace.WEST)) &&
                     FuturePlots.getInstance().isMerge(plot1, plot2)) {
                 inPlot = plot1;
+                System.out.println("3");
             }
         }
         return inPlot;

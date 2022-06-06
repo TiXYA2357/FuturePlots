@@ -16,19 +16,21 @@ package tim03we.futureplots.listener;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
+import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockFromToEvent;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.utils.Plot;
 import tim03we.futureplots.utils.Settings;
 
 public class LiquidFlow implements Listener {
-/*
+
     @EventHandler
-    public void onLiquid( event) {
+    public void onLiquid(BlockFromToEvent event) {
         if (event.isCancelled()) return;
         Block block = event.getBlock();
-        if(Settings.levels.contains(block.getLevel().getName())) {
+        if(Settings.levels.contains(block.getWorld().getName())) {
             Plot plot = FuturePlots.getInstance().getPlotByPosition(block.getLocation());
             if(plot == null) {
                 Plot merge = FuturePlots.getInstance().isInMergeCheck(block.getLocation());
@@ -37,5 +39,5 @@ public class LiquidFlow implements Listener {
                 }
             }
         }
-    }*/
+    }
 }

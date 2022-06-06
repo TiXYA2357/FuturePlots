@@ -16,6 +16,7 @@ package tim03we.futureplots.listener;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
+import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPistonEvent;
@@ -23,20 +24,17 @@ import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.utils.Plot;
 import tim03we.futureplots.utils.Settings;
 
-import java.util.List;
 
 public class BlockPiston implements Listener {
 
     @EventHandler
     public void onPiston(BlockPistonEvent event) {
-        /*if(Settings.levels.contains(event.getBlock().getWorld().getName())) {
-            List<Block> blocks = event.get();
-            for (Block block : blocks) {
-                Plot plot = FuturePlots.getInstance().getPlotByPosition(block.getLocation());
-                if(plot == null) {
-                    event.setCancelled(true);
-                }
+        if(Settings.levels.contains(event.getBlock().getWorld().getName())) {
+            Block block = event.getBlock();
+            Plot plot = FuturePlots.getInstance().getPlotByPosition(block.getLocation());
+            if(plot == null) {
+                event.setCancelled(true);
             }
-        }*/
+        }
     }
 }

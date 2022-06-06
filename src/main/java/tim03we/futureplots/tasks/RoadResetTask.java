@@ -39,13 +39,13 @@ public class RoadResetTask implements Runnable {
     private boolean reset;
 
     public RoadResetTask(FuturePlots plugin, Plot start, Plot end, boolean reset) {
-        /*this.plugin = plugin;
+        this.plugin = plugin;
         this.start = start;
         this.end = end;
         this.reset = reset;
 
         this.plotBeginPos = plugin.getPlotPosition(start);
-        this.level = plotBeginPos.getLevel();
+        this.level = plotBeginPos.getWorld();
 
         PlotSettings plotSettings = new PlotSettings(start.getLevelName());
         int plotSize = plotSettings.getPlotSize();
@@ -57,54 +57,54 @@ public class RoadResetTask implements Runnable {
 
         if((start.getZ() - end.getZ()) == 1) {
             this.plotBeginPos = this.plotBeginPos.subtract(0, 0, roadWidth);
-            this.xMax = this.plotBeginPos.getFloorX() + plotSize + (roadWidth - 1);
-            this.zMax = this.plotBeginPos.getFloorZ() + roadWidth;
+            this.xMax = this.plotBeginPos.getBlockX() + plotSize + (roadWidth - 1);
+            this.zMax = this.plotBeginPos.getBlockZ() + roadWidth;
         } else if((start.getX() - end.getX()) == -1) {
             this.plotBeginPos = this.plotBeginPos.add(plotSize, 0, 0);
-            this.xMax = this.plotBeginPos.getFloorX() + roadWidth;
-            this.zMax = this.plotBeginPos.getFloorZ() + plotSize + (roadWidth - 1);
+            this.xMax = this.plotBeginPos.getBlockX() + roadWidth;
+            this.zMax = this.plotBeginPos.getBlockZ() + plotSize + (roadWidth - 1);
         } else if((start.getZ() - end.getZ()) == -1) {
             this.plotBeginPos = this.plotBeginPos.add(0, 0, plotSize);
-            this.xMax = this.plotBeginPos.getFloorX() + plotSize + (roadWidth - 1);
-            this.zMax = this.plotBeginPos.getFloorZ() + roadWidth;
+            this.xMax = this.plotBeginPos.getBlockX() + plotSize + (roadWidth - 1);
+            this.zMax = this.plotBeginPos.getBlockZ() + roadWidth;
         } else if((start.getX() - end.getX()) == 1) {
             this.plotBeginPos = this.plotBeginPos.subtract(roadWidth, 0, 0);
-            this.xMax = this.plotBeginPos.getFloorX() + roadWidth;
-            this.zMax = this.plotBeginPos.getFloorZ() + plotSize + (roadWidth - 1);
+            this.xMax = this.plotBeginPos.getBlockX() + roadWidth;
+            this.zMax = this.plotBeginPos.getBlockZ() + plotSize + (roadWidth - 1);
         }
 
         this.maxBlocksPerTick = 256;
-        this.pos = new Vector3(this.plotBeginPos.x, 0, this.plotBeginPos.z);*/
+        this.pos = new Location(this.level, this.plotBeginPos.getX(), 0, this.plotBeginPos.getZ());
     }
 
     @Override
     public void run() {
-        /*int blocks = 0;
-        while (this.pos.x < this.xMax) {
-            while (this.pos.z < this.zMax) {
-                while (this.pos.y < 255) {
-                    Block block;
-                    if(this.pos.y == 0) {
+        int blocks = 0;
+        while (this.pos.getX() < this.xMax) {
+            while (this.pos.getZ() < this.zMax) {
+                while (this.pos.getY() < 255) {
+                    Material block;
+                    if(this.pos.getY() == 0) {
                         block = this.bottomBlock;
-                    } else if(this.pos.y < this.height) {
+                    } else if(this.pos.getY() < this.height) {
                         block = this.groundBlock;
                         //block = this.roadBlock;
-                    } else if(this.pos.y == this.height) {
+                    } else if(this.pos.getY() == this.height) {
                         block = this.roadBlock;
                     } else {
-                        block = Block.get(BlockID.AIR);
+                        block = Material.AIR;
                     }
-                    this.level.setBlock(this.pos, block, false);
-                    this.pos.y++;
+                    this.level.getBlockAt(this.pos).setType(block);
+                    this.pos.add(0, 1, 0);
 
                     blocks++;
                 }
-                this.pos.y = 0;
-                this.pos.z++;
+                this.pos.setY(0);
+                this.pos.add(0, 0, 1);
             }
-            this.pos.z = this.plotBeginPos.z;
-            this.pos.x++;
+            this.pos.setZ(this.plotBeginPos.getZ());
+            this.pos.add(1, 0, 0);
         }
-        this.plugin.getServer().getScheduler().scheduleTask(new MergeBorderResetTask(this.plugin, this.start, this.end, this.reset));*/
+        this.plugin.getServer().getScheduler().scheduleSyncDelayedTask(FuturePlots.getInstance(), new MergeBorderResetTask(this.plugin, this.start, this.end, this.reset));
     }
 }

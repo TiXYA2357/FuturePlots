@@ -62,36 +62,34 @@ public class PlotClearTask implements Runnable {
 
     @Override
     public void run() {
-        CompletableFuture.runAsync(() -> {
-            try {
-                Material block;
-                while (pos.getX() < xMax) {
-                    while (pos.getZ() < zMax) {
-                        while (pos.getY() < 256) {
-                            if (pos.getY() == 0) {
-                                block = bottomBlock;
-                            } else if (pos.getY() < height) {
-                                block = plotFillBlock;
-                            } else if (pos.getY() == height) {
-                                block = plotFloorBlock;
-                            } else {
-                                block = Material.getMaterial("AIR");
-                                //block = Block.get(0);
+        try {
+            Material block;
+            while (pos.getX() < xMax) {
+                while (pos.getZ() < zMax) {
+                    while (pos.getY() < 256) {
+                        if (pos.getY() == 0) {
+                            block = bottomBlock;
+                        } else if (pos.getY() < height) {
+                            block = plotFillBlock;
+                        } else if (pos.getY() == height) {
+                            block = plotFloorBlock;
+                        } else {
+                            block = Material.getMaterial("AIR");
+                            //block = Block.get(0);
 
-                            }
-                            pos.getBlock().setType(block);
-                            //level.setBlockData(pos, block);
-                            pos.add(0, 1, 0);
                         }
-                        pos.setY(0);
-                        pos.add(0, 0, 1);
+                        pos.getBlock().setType(block);
+                        //level.setBlockData(pos, block);
+                        pos.add(0, 1, 0);
                     }
-                    pos.setZ(plotBeginPos.getZ());
-                    pos.add(1, 0, 0);
+                    pos.setY(0);
+                    pos.add(0, 0, 1);
                 }
-            } catch (Exception ex) {
-                ex.printStackTrace();
+                pos.setZ(plotBeginPos.getZ());
+                pos.add(1, 0, 0);
             }
-        });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }
